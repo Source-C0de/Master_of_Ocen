@@ -7,3 +7,7 @@ brew install cloudflared
 
 
 cloudflared tunnel --url "project public url"
+
+
+note: it's temporary 
+it's not deployment
