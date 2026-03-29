@@ -1,0 +1,9 @@
+-- Install Cloud Fare --
+Follow official docs - https://developers.cloudflare.com/
+
+For Mac: 
+
+brew install cloudflared
+
+
+cloudflared tunnel --url "project public url"
