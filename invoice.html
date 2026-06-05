@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMA AL ANDALUS Invoice</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700;800&family=Noto+Sans:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Naskh Arabic', 'Noto Sans', Arial, sans-serif;
+            background: #e0e0e0;
+            padding: 20px;
+            direction: rtl;
+        }
+        
+        .controls {
+            width: 21cm;
+            margin: 0 auto 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .controls h2 {
+            margin-bottom: 15px;
+            color: #5d4037;
+            border-bottom: 2px solid #5d4037;
+            padding-bottom: 10px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        
+        .form-group input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        button {
+            background: #5d4037;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        button:hover {
+            background: #4e342e;
+        }
+        
+        .invoice-container {
+            width: 21cm;
+            height: 18cm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Header Section - Exact 21cm width */
+        .header {
+            background: #795548;
+            color: white;
+            height: 3.8cm;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0.4cm 0.6cm;
+            position: relative;
+        }
+        
+        .header-left {
+            width: 33%;
+            text-align: center;
+            padding-top: 0.2cm;
+        }
+        
+        .header-center {
+            width: 34%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 0.1cm;
+        }
+        
+        .header-right {
+            width: 33%;
+            text-align: center;
+            padding-top: 0.2cm;
+        }
+        
+        .company-name-en {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.2px;
+            margin-bottom: 0.15cm;
+            line-height: 1.2;
+        }
+        
+        .company-type {
+            font-size: 12px;
+            margin-bottom: 0.1cm;
+        }
+        
+        .cr-number, .vat-number {
+            font-size: 11px;
+            margin-bottom: 0.05cm;
+        }
+        
+        .company-name-ar {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 0.15cm;
+            line-height: 1.3;
+        }
+        
+        .company-type-ar, .cr-ar, .vat-ar {
+            font-size: 12px;
+            margin-bottom: 0.08cm;
+        }
+        
+        .logo-container {
+            width: 2.8cm;
+            height: 2.8cm;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 2px solid #a1887f;
+        }
+        
+        .logo-border {
+            position: absolute;
+            width: 108%;
+            height: 108%;
+            border: 2px dashed #8d6e63;
+            border-radius: 50%;
+            top: -4%;
+            left: -4%;
+        }
+        
+        .logo-diamond {
+            width: 1.6cm;
+            height: 1.6cm;
+            position: relative;
+        }
+        
+        .diamond-shape {
+            width: 1.4cm;
+            height: 1.1cm;
+            background: linear-gradient(135deg, #f5f5f5 25%, #e0e0e0 50%, #bdbdbd 75%);
+            position: absolute;
+            top: 0.4cm;
+            left: 0.1cm;
+            clip-path: polygon(50% 0%, 100% 40%, 50% 100%, 0% 40%);
+        }
+        
+        .diamond-top {
+            width: 1.4cm;
+            height: 0.4cm;
+            background: linear-gradient(to bottom, #ffffff, #e0e0e0);
+            position: absolute;
+            top: 0;
+            left: 0.1cm;
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+        }
+        
+        /* Main Content Area */
+        .main-content {
+            height: 11.5cm;
+            padding: 0.4cm 0.5cm;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Top Section */
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3cm;
+            height: 2.2cm;
+        }
+        
+        .invoice-info-box {
+            border: 1.5px solid #333;
+            padding: 0.3cm;
+            width: 7cm;
+            height: 2.4cm;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .invoice-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.15cm;
+            font-size: 11px;
+        }
+        
+        .invoice-info-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .center-title {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+            padding: 0 0.5cm;
+        }
+        
+        .center-title h3 {
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: underline;
+            text-decoration-thickness: 1.5px;
+            margin-bottom: 0.2cm;
+        }
+        
+        .payment-method {
+            font-size: 11px;
+        }
+        
+        .customer-box {
+            border: 1.5px solid #333;
+            padding: 0.3cm;
+            width: 7cm;
+            height: 2.4cm;
+        }
+        
+        .customer-row {
+            margin-bottom: 0.12cm;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .customer-row strong {
+            font-weight: 700;
+        }
+        
+        /* Table Section - Exact replica */
+        .table-wrapper {
+            margin-bottom: 0.3cm;
+        }
+        
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            table-layout: fixed;
+        }
+        
+        .invoice-table th {
+            background: #d7ccc8;
+            border: 1px solid #333;
+            padding: 0.2cm 0.1cm;
+            font-weight: 700;
+            text-align: center;
+            height: 0.9cm;
+            line-height: 1.2;
+        }
+        
+        .invoice-table td {
+            border: 1px solid #333;
+            padding: 0.25cm 0.1cm;
+            text-align: center;
+            font-weight: 600;
+            height: 0.8cm;
+        }
+        
+        .col-amount { width: 10%; }
+        .col-desc { width: 22%; }
+        .col-qty { width: 6%; }
+        .col-size { width: 8%; }
+        .col-weight { width: 9%; }
+        .col-stones { width: 7%; }
+        .col-karat { width: 7%; }
+        .col-price { width: 9%; }
+        .col-total { width: 10%; }
+        .col-vat { width: 10%; }
+        
+        .item-desc-cell {
+            text-align: right !important;
+            padding-right: 0.4cm !important;
+        }
+        
+        /* Bottom Section */
+        .bottom-section {
+            display: flex;
+            height: 4.2cm;
+            gap: 0.3cm;
+        }
+        
+        .qr-section {
+            width: 48%;
+            border: 1.5px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .qr-content {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        #qrcode {
+            width: 2.8cm;
+            height: 2.8cm;
+            margin-bottom: 0.2cm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #qrcode img {
+            width: 2.8cm !important;
+            height: 2.8cm !important;
+            border: none !important;
+        }
+        
+        .seller-name {
+            font-size: 11px;
+            margin-top: 0.1cm;
+        }
+        
+        .totals-section {
+            width: 52%;
+            border: 1.5px solid #333;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .total-row {
+            display: flex;
+            border-bottom: 1px solid #333;
+            height: 20%;
+            align-items: center;
+        }
+        
+        .total-row:last-child {
+            border-bottom: none;
+            background: #d7ccc8;
+            font-weight: 800;
+        }
+        
+        .total-row:nth-child(4) {
+            background: #efebe9;
+        }
+        
+        .total-label-ar {
+            width: 45%;
+            padding: 0 0.3cm;
+            text-align: right;
+            font-size: 10px;
+            border-left: 1px solid #333;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        
+        .total-label-en {
+            width: 35%;
+            padding: 0 0.2cm;
+            text-align: left;
+            font-size: 10px;
+            border-left: 1px solid #333;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .total-value {
+            width: 20%;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #d7ccc8;
+            height: 1.2cm;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0.1cm;
+        }
+        
+        .footer-ar {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 0.05cm;
+        }
+        
+        .footer-en {
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .controls {
+                display: none;
+            }
+            .invoice-container {
+                box-shadow: none;
+                margin: 0;
+                page-break-after: always;
+            }
+        }
+        
+        @page {
+            size: 21cm 18cm;
+            margin: 0;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="controls">
+        <h2>Invoice Information / معلومات الفاتورة</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Invoice Number / رقم الفاتورة</label>
+                <input type="text" id="invNumber" value="2851">
+            </div>
+            <div class="form-group">
+                <label>Date / تاريخ الفاتورة</label>
+                <input type="text" id="invDate" value="05/12/2025">
+            </div>
+            <div class="form-group">
+                <label>Customer Name / اسم العميل</label>
+                <input type="text" id="custName" value="FAHMIM MOHAMMOD SHAHRIAR">
+            </div>
+            <div class="form-group">
+                <label>Customer VAT / الرقم الضريبي</label>
+                <input type="text" id="custVat" value="لايوجد">
+            </div>
+            <div class="form-group">
+                <label>Phone / رقم الجوال</label>
+                <input type="text" id="custPhone" value="0547350250">
+            </div>
+            <div class="form-group">
+                <label>Item / وصف الصنف</label>
+                <input type="text" id="itemDesc" value="طقم">
+            </div>
+            <div class="form-group">
+                <label>Qty / الكمية</label>
+                <input type="number" id="qty" value="1" step="1">
+            </div>
+            <div class="form-group">
+                <label>Gold Weight / وزن الذهب</label>
+                <input type="number" id="goldWeight" value="9.70" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>Stones / أحجار</label>
+                <input type="number" id="stonesWeight" value="0.00" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>Karat / العيار</label>
+                <input type="number" id="karat" value="22.00" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>Price / سعر الجرام</label>
+                <input type="number" id="price" value="475.12" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>VAT % / الضريبة</label>
+                <input type="number" id="vatPercent" value="15" step="1">
+            </div>
+        </div>
+        <button onclick="updateInvoice()">Generate Invoice / إنشاء الفاتورة</button>
+        <button onclick="window.print()" style="background: #2e7d32;">Print / طباعة</button>
+    </div>
+
+    <div class="invoice-container" id="invoice">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-right">
+                <div class="company-name-ar">شركة سماء الأندلس الوطنية للتجارة</div>
+                <div class="company-type-ar">ذات مسؤولية محدودة</div>
+                <div class="cr-ar">س.ت : ١٠١٠٥١٨٣٤٩</div>
+                <div class="vat-ar">الرقم الضريبي : ٣٠٢٠٠٨٢٣٩٧٠٠٠٠٣</div>
+            </div>
+            
+            <div class="header-center">
+                <div class="logo-container">
+                    <div class="logo-border"></div>
+                    <div class="logo-diamond">
+                        <div class="diamond-top"></div>
+                        <div class="diamond-shape"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="header-left">
+                <div class="company-name-en">SAMA AL ANDALUS AL-WATNIYA TRADING CO.</div>
+                <div class="company-type">Limited Livability</div>
+                <div class="cr-number">C.R. : 1010518349</div>
+                <div class="vat-number">VAT No. 302008239700003</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Section -->
+            <div class="top-section">
+                <div class="customer-box">
+                    <div class="customer-row">
+                        <span id="displayCustName">FAHMIM MOHAMMOD SHAHRIAR</span>
+                        <strong>اسم العميل</strong>
+                    </div>
+                    <div class="customer-row">
+                        <span id="displayCustVat">لايوجد</span>
+                        <strong>الرقم الضريبي</strong>
+                    </div>
+                    <div class="customer-row">
+                        <span id="displayCustPhone">0547350250</span>
+                        <strong>رقم الجوال</strong>
+                    </div>
+                </div>
+                
+                <div class="center-title">
+                    <h3>فاتورة ضريبية مبسطة</h3>
+                    <div class="payment-method">طريقة الدفع نقدا</div>
+                </div>
+                
+                <div class="invoice-info-box">
+                    <div class="invoice-info-row">
+                        <span>رقم الفاتورة</span>
+                        <span id="displayInvNumber">2851</span>
+                    </div>
+                    <div class="invoice-info-row">
+                        <span>تاريخ الفاتورة</span>
+                        <span id="displayInvDate">05/12/2025</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-wrapper">
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th class="col-desc">وصف الصنف<br>Item Description</th>
+                            <th class="col-qty">الكمية<br>Qty</th>
+                            <th class="col-karat">العيار<br>Karat</th>
+                            <th class="col-weight">وزن الذهب<br>Weight</th>
+                            <th class="col-price">سعر الجرام<br>Price</th>
+                            
+                            <th class="col-stones">أحجار<br>Stones</th>
+                            
+                            <th class="col-size">المقاس<br>Size</th>
+                            
+                            <th class="col-total">الإجمالي<br>Total</th>
+                            <th class="col-vat">الضريبة<br>V.A.T</th>
+                            <th class="col-amount">إجمالي المبلغ<br>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="item-desc-cell" id="rowItem">طقم</td>
+                            <td id="rowQty">1</td>
+                            <td id="rowKarat">22.00</td>
+                            <td id="rowWeight">9.70</td>
+                            <td id="rowPrice">475.12</td>
+                            
+                            <td id="rowStones">0.00</td>
+                            
+                            <td id="rowSize"></td>
+                            
+                            <td id="rowTotal">4608.69</td>
+                            <td id="rowVat">691.30</td>
+                            <td id="rowAmount">5300.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="bottom-section">
+                <div class="qr-section">
+                    <div class="qr-content">
+                        <div id="qrcode"></div>
+                        <div class="seller-name">اسم البائع</div>
+                    </div>
+                </div>
+                
+                <div class="totals-section">
+                    <div class="total-row">
+                        
+                        <div class="total-label-en">Total Gold Weight</div>
+                        <div class="total-label-ar">إجمالي الوزن الذهب</div>
+                        <div class="total-value" id="totalGoldWeight">9.70</div>
+                    </div>
+                    <div class="total-row">
+                        
+                        <div class="total-label-en">
+                        Total Stones Weight
+                        </div>
+                        <div class="total-label-ar">
+                            إجمالي وزن الاحجار
+                        </div>
+                        <div class="total-value" id="totalStonesWeight">0.00</div>
+                    </div>
+                    <div class="total-row">
+                        <div class="total-label-en">Total (VAT Excluding)</div>
+                        <div class="total-label-ar">الإجمالي قبل الضريبة</div>
+                        <div class="total-value" id="totalExclVat">4608.69</div>
+                    </div>
+                    <div class="total-row">
+                        <div class="total-label-en">V.A.T Percent 15%</div>
+                        <div class="total-label-ar">ضريبة القيمة المضافة بنسبة</div>
+                        <div class="total-value" id="vatAmount">691.30</div>
+                    </div>
+                    <div class="total-row">
+                        
+                        <div class="total-label-en">Total With V.A.T</div>
+                        <div class="total-label-ar">الإجمالي شامل ضريبة القيمة المضافة</div>
+                        <div class="total-value" id="totalWithVat">5300.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-ar">المملكة العربية السعودية ، الرياض ، منطقة البطحاء ، هاتف : ٠١١ ٤١١٦٦٩٥</div>
+            <div class="footer-en">Kingdom of Saudi Arabia, Riyadh, Al-Batha Area, Tel : 011 4116695</div>
+        </div>
+    </div>
+
+    <script>
+        let qrCodeObj = null;
+        
+        function generateQRCode() {
+            const invNumber = document.getElementById('invNumber').value;
+            const invDate = document.getElementById('invDate').value;
+            const custName = document.getElementById('custName').value;
+            const totalAmount = document.getElementById('totalWithVat').textContent;
+            const vatAmount = document.getElementById('vatAmount').textContent;
+            const companyVAT = "302008239700003";
+            
+            // ZATCA compliant QR data format (Saudi VAT requirements)
+            const qrData = [
+                "Seller: SAMA AL ANDALUS AL-WATNIYA TRADING CO.",
+                "VAT: " + companyVAT,
+                "Date: " + invDate,
+                "Invoice: " + invNumber,
+                "Customer: " + custName,
+                "Total: " + totalAmount + " SAR",
+                "VAT Amount: " + vatAmount + " SAR"
+            ].join(" | ");
+            
+            // Clear previous QR
+            const qrContainer = document.getElementById("qrcode");
+            qrContainer.innerHTML = "";
+            
+            // Generate new QR
+            qrCodeObj = new QRCode(qrContainer, {
+                text: qrData,
+                width: 106, // 2.8cm in pixels (approx 38px per cm)
+                height: 106,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.M
+            });
+        }
+        
+        function calculate() {
+            const qty = parseFloat(document.getElementById('qty').value) || 0;
+            const weight = parseFloat(document.getElementById('goldWeight').value) || 0;
+            const price = parseFloat(document.getElementById('price').value) || 0;
+            const vatPercent = parseFloat(document.getElementById('vatPercent').value) || 0;
+            const stones = parseFloat(document.getElementById('stonesWeight').value) || 0;
+            
+            const totalExcl = weight * price;
+            const vat = totalExcl * (vatPercent / 100);
+            const totalWith = totalExcl + vat;
+            
+            return {
+                qty,
+                weight,
+                stones,
+                price,
+                totalExcl,
+                vat,
+                totalWith
+            };
+        }
+        
+        function updateInvoice() {
+            const calc = calculate();
+            
+            // Update display values
+            document.getElementById('displayInvNumber').textContent = document.getElementById('invNumber').value;
+            document.getElementById('displayInvDate').textContent = document.getElementById('invDate').value;
+            document.getElementById('displayCustName').textContent = document.getElementById('custName').value;
+            document.getElementById('displayCustVat').textContent = document.getElementById('custVat').value;
+            document.getElementById('displayCustPhone').textContent = document.getElementById('custPhone').value;
+            
+            // Update table
+            document.getElementById('rowQty').textContent = calc.qty;
+            document.getElementById('rowWeight').textContent = calc.weight.toFixed(2);
+            document.getElementById('rowStones').textContent = calc.stones.toFixed(2);
+            document.getElementById('rowKarat').textContent = parseFloat(document.getElementById('karat').value).toFixed(2);
+            document.getElementById('rowPrice').textContent = calc.price.toFixed(2);
+            document.getElementById('rowTotal').textContent = calc.totalExcl.toFixed(2);
+            document.getElementById('rowVat').textContent = calc.vat.toFixed(2);
+            document.getElementById('rowAmount').textContent = calc.totalWith.toFixed(2);
+            document.getElementById('rowItem').textContent = document.getElementById('itemDesc').value;
+            
+            // Update totals
+            document.getElementById('totalGoldWeight').textContent = calc.weight.toFixed(2);
+            document.getElementById('totalStonesWeight').textContent = calc.stones.toFixed(2);
+            document.getElementById('totalExclVat').textContent = calc.totalExcl.toFixed(2);
+            document.getElementById('vatAmount').textContent = calc.vat.toFixed(2);
+            document.getElementById('totalWithVat').textContent = calc.totalWith.toFixed(2);
+            
+            // Update VAT label
+            const vatPercent = document.getElementById('vatPercent').value;
+            document.querySelector('.total-row:nth-child(4) .total-label-en').textContent = `V.A.T Percent ${vatPercent}%`;
+            
+            // Generate QR Code with updated data
+            setTimeout(generateQRCode, 100);
+        }
+        
+        // Initialize
+        window.onload = function() {
+            updateInvoice();
+        };
+    </script>
+</body>
+</html>
