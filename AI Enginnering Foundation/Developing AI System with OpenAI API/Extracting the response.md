@@ -16,9 +16,21 @@ client = OpenAI(api_key="<OPENAI_API_TOKEN>")
 response = get_response(messages, function_definition)
 
 # Define the function to extract the data dictionary
-def extract_dictionary(messages,function_definition):
-  
-  return {}
+def extract_dictionary(____):
+  return ____
 
 # Print the data dictionary
-print(extract_dictionary)
+____
+
+
+__solution__
+client = OpenAI(api_key="<OPENAI_API_TOKEN>")
+
+response = get_response(messages, function_definition)
+
+# Define the function to extract the data dictionary
+def extract_dictionary(response):
+  return response.choices[0].message.tool_calls[0].function.arguments
+
+# Print the data dictionary
+print(extract_dictionary(response))
