@@ -269,6 +269,7 @@ CREATE TABLE employees ...
 ---
 
 # Internal Flow
+<img width="617" height="193" alt="image" src="https://github.com/user-attachments/assets/08b8f1ba-9a69-4018-ba93-ca6e6f12d720" />
 
 ```text
 Database
